@@ -28,9 +28,9 @@ def kfold_normal_training_softgedt(filename, data, ncat, non_editable_vector, da
     experiments_adt_errs = []
     experiments_hard_accs = []
     experiments_hard_adt_errs = []
-    L1_REG = 0.1
-    for i in range(5):
-        print('experiment:', i)
+    L1_REG = 0.01
+    for experiment in range(5):
+        print('experiment:', experiment)
         # K-fold parameters
         K_FOLDS = 5
         kfold = KFold(n_splits=K_FOLDS, shuffle=True)
@@ -115,7 +115,8 @@ def kfold_normal_training_softgedt(filename, data, ncat, non_editable_vector, da
             validation_epoch_num_correct = [0 for i in range(EPOCHS)]
             validation_epoch_num_total = [0 for i in range(EPOCHS)]
 
-            torch.save(SoftGeDT.gate_weights, f'{filename}_params_state_dict/softgedt_normal_cv_{fold}_epoch{-1}_weights')
+            torch.save(SoftGeDT.gate_weights,
+                       f'{filename}_params_state_dict/softgedt_normal_cv_{fold}_epoch{-1}_weights')
             torch.save(SoftGeDT.gate_split_values,
                        f'{filename}_params_state_dict/softgedt_normal_cv_{fold}_epoch{-1}_split_values')
             torch.save(SoftGeDT.sum_weights,
@@ -141,7 +142,8 @@ def kfold_normal_training_softgedt(filename, data, ncat, non_editable_vector, da
                 for X, y in trainloader:
                     opt.zero_grad()
                     pred, prob = SoftGeDT.classify(X, return_prob=True)
-                    loss = F.nll_loss(torch.log(prob), y.type(torch.int64), reduction='sum')
+                    loss = F.nll_loss(torch.log(prob), y.type(torch.int64), reduction='sum')+ L1_REG * (sum([torch.abs(x) for x in SoftGeDT.gate_weights])) + (
+                           sum(sum([torch.abs(x) for x in SoftGeDT.sum_weights])))
                     loss.backward()
                     opt.step()
 
@@ -302,8 +304,10 @@ def kfold_adversarial_training_softgedt(filename, data, ncat, non_editable_vecto
 
     experiments_accs = []
     experiments_adt_errs = []
-    L1_REG = 0.5
-    for i in range(5):
+    L1_REG = 0.01
+    for experiment in range(5):
+        print("experiment:", experiment)
+
         # K-fold parameters
         K_FOLDS = 5
         kfold = KFold(n_splits=K_FOLDS, shuffle=True)
@@ -366,7 +370,8 @@ def kfold_adversarial_training_softgedt(filename, data, ncat, non_editable_vecto
             err_epoch_train = [0 for i in range(EPOCHS)]
             err_epoch_valid = [0 for i in range(EPOCHS)]
 
-            torch.save(SoftGeDTAdv.gate_weights, f'{filename}_params_state_dict/softgedt_adt_cv_{fold}_epoch{-1}_weights')
+            torch.save(SoftGeDTAdv.gate_weights,
+                       f'{filename}_params_state_dict/softgedt_adt_cv_{fold}_epoch{-1}_weights')
             torch.save(SoftGeDTAdv.gate_split_values,
                        f'{filename}_params_state_dict/softgedt_adt_cv_{fold}_epoch{-1}_split_values')
             torch.save(SoftGeDTAdv.sum_weights,
@@ -442,7 +447,8 @@ def kfold_adversarial_training_softgedt(filename, data, ncat, non_editable_vecto
                         err_epoch_train[i] = 0
                         err_epoch_valid[i] = 0
                         # load params from previous epoch
-                        weights = torch.load(f'{filename}_params_state_dict/softgedt_adt_cv_{fold}_epoch{i - 1}_weights')
+                        weights = torch.load(
+                            f'{filename}_params_state_dict/softgedt_adt_cv_{fold}_epoch{i - 1}_weights')
                         split_values = torch.load(
                             f'{filename}_params_state_dict/softgedt_adt_cv_{fold}_epoch{i - 1}_split_values')
                         sum_weights = torch.load(
@@ -514,7 +520,9 @@ def kfold_normal_training_neural_networks(Net, filename, data, ncat, non_editabl
 
     experiments_accs = []
     experiments_adt_errs = []
-    for i in range(5):
+    for experiment in range(5):
+        print("experiment:", experiment)
+
         # K-fold parameters
         K_FOLDS = 5
         kfold = KFold(n_splits=K_FOLDS, shuffle=True)
@@ -647,7 +655,8 @@ def kfold_normal_training_neural_networks(Net, filename, data, ncat, non_editabl
                         acc_epoch_train[i] = 0
                         acc_epoch_valid[i] = 0
                         # load params from previous epoch
-                        net.load_state_dict(torch.load(f'{filename}_params_state_dict/fnn_normal_cv_{fold}_epoch{i - 1}'))
+                        net.load_state_dict(
+                            torch.load(f'{filename}_params_state_dict/fnn_normal_cv_{fold}_epoch{i - 1}'))
                         break
                 else:
                     trigger_times = 0
@@ -715,7 +724,9 @@ def kfold_adversarial_training_neural_networks(Net, filename, data, ncat, non_ed
     experiments_accs = []
     experiments_adt_errs = []
 
-    for i in range(5):
+    for experiment in range(5):
+        print("experiment:", experiment)
+
         # K-fold parameters
         K_FOLDS = 5
         kfold = KFold(n_splits=K_FOLDS, shuffle=True)
@@ -824,7 +835,8 @@ def kfold_adversarial_training_neural_networks(Net, filename, data, ncat, non_ed
                         err_epoch_train[i] = 0
                         err_epoch_valid[i] = 0
                         # load params from previous epoch
-                        netAdv.load_state_dict(torch.load(f'{filename}_params_state_dict/fnn_adt_cv_{fold}_epoch{i - 1}'))
+                        netAdv.load_state_dict(
+                            torch.load(f'{filename}_params_state_dict/fnn_adt_cv_{fold}_epoch{i - 1}'))
 
                         break
                 else:

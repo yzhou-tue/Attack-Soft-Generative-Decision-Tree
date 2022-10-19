@@ -39,7 +39,8 @@ def pgd_linf(model, X, y, epsilon=0.1, alpha=0.01, num_iter=20, L1_REG=None, ran
             pred, prob = model.classify(X + delta, return_prob=True)
             if L1_REG != None:
                 loss = F.nll_loss(torch.log(prob), y.type(torch.int64), reduction='sum') \
-                       + L1_REG * abs(sum(model.gate_weights + model.sum_weights))
+                       + L1_REG * (sum([torch.abs(x) for x in model.gate_weights])) + (
+                           sum(sum([torch.abs(x) for x in model.sum_weights])))
             else:
                 loss = F.nll_loss(torch.log(prob), y.type(torch.int64), reduction='sum')
             loss.backward(retain_graph=True)
@@ -128,7 +129,8 @@ def epoch_adversarial_training(loader, model, attack, return_adv=False, L1_REG=N
         # L1 regularization
         if L1_REG != None:
             loss = F.nll_loss(torch.log(prob), y.type(torch.int64), reduction='sum') \
-                   + L1_REG * abs(sum(model.gate_weights + model.sum_weights))
+                   + L1_REG * (sum([torch.abs(x) for x in model.gate_weights])) + (
+                       sum(sum([torch.abs(x) for x in model.sum_weights])))
         else:
             loss = F.nll_loss(torch.log(prob), y.type(torch.int64), reduction='sum')
 
@@ -143,6 +145,8 @@ def epoch_adversarial_training(loader, model, attack, return_adv=False, L1_REG=N
             opt.step()
 
         total_err += (pred != y).sum().item()
+
+        # print(sum([torch.abs(x) for x in model.sum_weights]),loss-sum([torch.abs(x) for x in model.sum_weights]))
         total_loss += loss.item()
     if return_adv:
         return total_err / len(loader.dataset), total_loss / len(loader.dataset), X_advs, y_advs
