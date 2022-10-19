@@ -13,6 +13,17 @@ import math
 
 
 def kfold_normal_training_softgedt(filename, data, ncat, non_editable_vector, datatypes, include_sum_weight=True):
+    """
+    This function perform 5 experiments and 5-fold cross validation to test the accuracy and robustness of soft GeDT
+    before adversarial training
+
+    :param filename: filename for storing parameters of model
+    :param data: input data
+    :param ncat: number of categories
+    :param non_editable_vector: editability vector
+    :param datatypes: data types of features
+    :param include_sum_weight: whether include weights of sum nodes in the optimizer
+    """
     experiments_accs = []
     experiments_adt_errs = []
     experiments_hard_accs = []
@@ -277,6 +288,18 @@ def kfold_normal_training_softgedt(filename, data, ncat, non_editable_vector, da
 
 
 def kfold_adversarial_training_softgedt(filename, data, ncat, non_editable_vector, datatypes, include_sum_weight=True):
+    """
+    This function perform 5 experiments and 5-fold cross validation to test the accuracy and robustness of soft GeDT
+    after adversarial training
+
+    :param filename: filename for storing parameters of model
+    :param data: input data
+    :param ncat: number of categories
+    :param non_editable_vector: editability vector
+    :param datatypes: data types of features
+    :param include_sum_weight: whether include weights of sum nodes in the optimizer
+    """
+
     experiments_accs = []
     experiments_adt_errs = []
     L1_REG = 0.5
@@ -477,6 +500,18 @@ def kfold_adversarial_training_softgedt(filename, data, ncat, non_editable_vecto
 
 
 def kfold_normal_training_neural_networks(Net, filename, data, ncat, non_editable_vector, datatypes):
+    """
+    This function perform 5 experiments and 5-fold cross validation to test the accuracy and robustness of neural network
+    before adversarial training
+
+    :param filename: filename for storing parameters of model
+    :param data: input data
+    :param ncat: number of categories
+    :param non_editable_vector: editability vector
+    :param datatypes: data types of features
+    :param include_sum_weight: whether include weights of sum nodes in the optimizer
+    """
+
     experiments_accs = []
     experiments_adt_errs = []
     for i in range(5):
@@ -665,6 +700,18 @@ def kfold_normal_training_neural_networks(Net, filename, data, ncat, non_editabl
 
 
 def kfold_adversarial_training_neural_networks(Net, filename, data, ncat, non_editable_vector, datatypes):
+    """
+    This function perform 5 experiments and 5-fold cross validation to test the accuracy and robustness of neural network
+    before adversarial training
+
+    :param filename: filename for storing parameters of model
+    :param data: input data
+    :param ncat: number of categories
+    :param non_editable_vector: editability vector
+    :param datatypes: data types of features
+    :param include_sum_weight: whether include weights of sum nodes in the optimizer
+    """
+
     experiments_accs = []
     experiments_adt_errs = []
 
